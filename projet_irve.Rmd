@@ -1,0 +1,116 @@
+---
+title: "Analyse des IRVE à Nanteuil-le-Haudouin et Pont-l’Abbé"
+author: "Celia et Charlotte"
+output:
+  html_document:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(readr)
+library(leaflet)
+```
+
+
+```{r setup, include}
+irve_data <- read_csv("../data/irve.csv")
+
+
+colnames(irve_data)
+```
+
+
+```{r setup, en cours}
+communes_cible <- c("60447", "29220")
+
+
+irve_filtre <- irve_data %>%
+  filter(code_insee_commune %in% communes_cible) %>%
+  filter(!is.na(coordonneesXY))
+```
+
+
+```{r setup, développement}
+library(tidyr)
+library(dplyr)
+
+irve_filtre <- irve_data %>%
+  filter(code_insee_commune %in% c("60447", "29220")) %>%
+  separate(coordonneesXY, into = c("lat", "lon"), sep = ",", remove = FALSE) %>%
+  mutate(
+    lat = as.numeric(lat),
+    lon = as.numeric(lon)
+  ) %>%
+  filter(!is.na(lat) & !is.na(lon))
+
+leaflet(irve_filtre) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~lon,
+    lat = ~lat,
+    popup = ~paste("<b>Borne :</b>", nom_station, "<br>",
+                   "<b>Adresse :</b>", adresse_station, "<br>",
+                   "<b>Opérateur :</b>", nom_operateur),
+    radius = 6,
+    color = "blue",
+    stroke = FALSE,
+    fillOpacity = 0.7
+  ) %>%
+  addLegend("bottomright", colors = "blue", labels = "Bornes IRVE")
+```
+
+
+```{r setup, finito}
+
+irve_filtre %>%
+  group_by(code_insee_commune) %>%
+  summarise(nb_bornes = n())
+
+
+irve_filtre %>%
+  count(nom_operateur, sort = TRUE) %>%
+  head(5)
+```
+
+
+```{r}
+library(dplyr)
+library(tidyr)
+
+communes_cible <- c("29220", "60447")
+
+irve_data_filtered <- irve_data %>%
+  filter(code_insee_commune %in% communes_cible)
+
+
+irve_coord_clean <- irve_data_filtered %>%
+  separate(coordonneesXY, into = c("lat", "lon"), sep = ",", remove = FALSE) %>%
+  mutate(
+    lat_num = as.numeric(lat),
+    lon_num = as.numeric(lon)
+  ) %>%
+  filter(!is.na(lat_num) & !is.na(lon_num))
+
+```
+
+
+```{r setup, ciao}
+library(leaflet)
+
+leaflet(irve_coord_clean) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~lon_num,
+    lat = ~lat_num,
+    popup = ~paste0(
+      "<b>Station :</b> ", nom_station, "<br>",
+      "<b>Latitude :</b> ", lat_num, "<br>",
+      "<b>Longitude :</b> ", lon_num
+    ),
+    radius = 6,
+    color = "blue",
+    fillOpacity = 0.7
+  ) %>%
+  addLegend("bottomright", colors = "blue", labels = "Bornes IRVE", title = "Légende")
