@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Données</title>
+  <style>
+    body { font-family: sans-serif; background-color: #eef2f7; color: #111; padding: 2em; }
+    nav a { margin-right: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Données</h1>
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="problematique.html">Problématique</a>
+  </nav>
+  <p>Voici les données analysées sur les bornes IRVE :</p>
+  <p><em>Carte ou tableau à intégrer ici si besoin</em></p>
+</body>
+</html>
